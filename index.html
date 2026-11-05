@@ -176,6 +176,15 @@ body.hilux .stage { width: min(46vw, 220px, 26vh); }
 .cover-row { display: none; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
 body.hilux .cover-row { display: flex; }
 .label.has-img span { display: none; }
+.scene { position: relative; aspect-ratio: 2 / 1; background: #02040f; }
+.scene video { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 55%; }
+.scene .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 7px; text-align: center; pointer-events: none;
+  background: linear-gradient(to top, rgba(2,4,15,.9), rgba(2,4,15,0));
+  font: 400 12px/1 var(--f-display); letter-spacing: .12em; color: #ffe3a0;
+  text-shadow: 0 0 8px var(--pink), 0 0 16px var(--pink); }
+body.hilux .now { gap: 12px; }
+body.hilux .stage { width: min(32vw, 125px, 16vh); }
+body.hilux #viz { height: 40px; }
 .road-dash { stroke-dasharray: 18 16; animation: road .5s linear infinite; animation-play-state: paused; }
 body.playing .road-dash { animation-play-state: running; }
 @keyframes road { to { stroke-dashoffset: 34; } }
@@ -329,83 +338,9 @@ body.playing .halo { animation-play-state: running; }
           <svg class="i"><use href="#i-vol"/></svg>
           <input type="range" id="vol" min="0" max="100" value="85" aria-label="Volume">
         </div>
-        <div class="scene" aria-hidden="true">
-          <svg viewBox="0 0 400 170">
-            <defs>
-              <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#150a45"/>
-                <stop offset=".45" stop-color="#5b1a96"/>
-                <stop offset=".78" stop-color="#ff4fa3"/>
-                <stop offset="1" stop-color="#ffb62e"/>
-              </linearGradient>
-              <linearGradient id="sunG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffe9a8"/>
-                <stop offset="1" stop-color="#ff3df0"/>
-              </linearGradient>
-              <linearGradient id="beamG" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#ffd27a" stop-opacity=".85"/>
-                <stop offset="1" stop-color="#ffb62e" stop-opacity="0"/>
-              </linearGradient>
-              <mask id="sunM">
-                <rect x="0" y="0" width="400" height="170" fill="#fff"/>
-                <rect x="140" y="86" width="120" height="2" fill="#000"/>
-                <rect x="140" y="93" width="120" height="3" fill="#000"/>
-                <rect x="140" y="100" width="120" height="4" fill="#000"/>
-                <rect x="140" y="107" width="120" height="5" fill="#000"/>
-              </mask>
-              <g id="bull">
-                <path d="M5 9 Q1 12 2 19" fill="none" stroke="#ff3df0" stroke-width="1.2"/>
-                <ellipse cx="16" cy="11" rx="11" ry="6.5"/>
-                <ellipse cx="9" cy="6.5" rx="5" ry="4"/>
-                <ellipse cx="28" cy="12.5" rx="5" ry="4"/>
-                <path d="M26 9 Q22 4 24 1M30 9 Q34 4 32 1" fill="none" stroke="#ffe3a0" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M8 15v7M12 16v6M21 16v6M25 15v7" stroke="#ff3df0" stroke-width="2" stroke-linecap="round"/>
-              </g>
-            </defs>
-            <rect width="400" height="130" fill="url(#skyG)"/>
-            <g class="stars" fill="#cfeaff">
-              <circle cx="24" cy="12" r="1.2"/><circle cx="70" cy="26" r="1"/><circle cx="118" cy="9" r="1.4"/>
-              <circle cx="300" cy="14" r="1"/><circle cx="350" cy="30" r="1.2"/><circle cx="384" cy="10" r="1"/>
-            </g>
-            <circle cx="200" cy="84" r="46" fill="url(#sunG)" mask="url(#sunM)"/>
-            <path d="M0 112 L0 96 Q40 80 80 98 T150 104 Q200 112 250 104 T330 96 Q370 84 400 98 L400 130 L0 130 Z" fill="#3a1a78" stroke="#a066ff" stroke-width="1.5"/>
-            <path d="M0 120 Q60 110 120 118 T240 116 T400 113 L400 130 L0 130 Z" fill="#12083a" stroke="#ff3df0" stroke-width="1.5"/>
-            <g fill="#0b0530" stroke="#ff3df0" stroke-width=".9">
-              <use href="#bull" transform="translate(18 99)"/>
-              <use href="#bull" transform="translate(378 101) scale(-.9 .9)"/>
-            </g>
-            <rect x="0" y="130" width="400" height="40" fill="#07041f"/>
-            <line x1="0" y1="130.5" x2="400" y2="130.5" stroke="#ff3df0" stroke-width="2"/>
-            <line class="road-dash" x1="-20" y1="148" x2="420" y2="148" stroke="#19f2ff" stroke-width="3"/>
-            <text class="tag" x="200" y="164" text-anchor="middle">CÉLIA E RUBINHO · VEM PRÁ HILUX</text>
-            <g transform="translate(88 62) scale(1.6)">
-              <polygon class="beam" points="140,22 250,0 250,48" fill="url(#beamG)"/>
-              <g class="truck">
-                <path d="M0 32 L0 14 L46 14 L46 4 L62 4 L74 -6 L98 -6 L108 8 L108 16 L138 20 L140 32 Z" fill="#0b1438" stroke="#2fa8ff" stroke-width="2" stroke-linejoin="round"/>
-                <path d="M66 3 L76 -3 L96 -3 L103 8 L66 8 Z" fill="#8ad8ff" opacity=".4"/>
-                <path d="M72 3 Q71 -4 77 -4 Q83 -4 82 3 L82 8 L72 8 Z" fill="#3b1d2a"/>
-                <circle cx="77" cy="3" r="4" fill="#ffd1b0"/>
-                <circle cx="75.6" cy="2.6" r=".6" fill="#02040f"/><circle cx="78.6" cy="2.6" r=".6" fill="#02040f"/>
-                <circle cx="73" cy="-2.2" r="1.4" fill="#ff3df0"/>
-                <circle cx="92" cy="3" r="4" fill="#ffcf9f"/>
-                <circle cx="90.6" cy="2.6" r=".6" fill="#02040f"/><circle cx="93.6" cy="2.6" r=".6" fill="#02040f"/>
-                <path d="M90.4 5 Q92 4.2 93.6 5" fill="none" stroke="#3b1d2a" stroke-width=".7"/>
-                <ellipse cx="92" cy="-.6" rx="7.5" ry="1.6" fill="#ffb62e"/>
-                <path d="M87 -.6 Q87.6 -6 92 -6 Q96.4 -6 97 -.6 Z" fill="#ffb62e"/>
-                <line x1="3" y1="21" x2="43" y2="21" stroke="#2fa8ff" stroke-width="1.5" opacity=".7"/>
-                <line x1="48" y1="24" x2="106" y2="24" stroke="#2fa8ff" stroke-width="1.5" opacity=".7"/>
-                <rect x="133" y="21" width="6" height="4" rx="1" fill="#ffe3a0"/>
-                <rect x="0" y="18" width="3" height="5" fill="#ff5d7a"/>
-                <g class="wheel"><circle cx="24" cy="34" r="9" fill="#02040f" stroke="#8ad8ff" stroke-width="2"/><path d="M24 27v14M17 34h14" stroke="#2fa8ff" stroke-width="2"/></g>
-                <g class="wheel"><circle cx="114" cy="34" r="9" fill="#02040f" stroke="#8ad8ff" stroke-width="2"/><path d="M114 27v14M107 34h14" stroke="#2fa8ff" stroke-width="2"/></g>
-              </g>
-            </g>
-            <g class="bubble" transform="translate(215 0)">
-              <rect x="-72" y="8" width="144" height="24" rx="12" fill="#fff3d6" stroke="#ff3df0" stroke-width="1.5"/>
-              <path d="M-7 31 L1 44 L9 31 Z" fill="#fff3d6"/>
-              <text id="bubbleTxt" x="0" y="24" text-anchor="middle">Vem prá Hilux!</text>
-            </g>
-          </svg>
+        <div class="scene">
+          <video id="hiluxVid" src="video/hilux.mp4" poster="video/hilux-poster.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Vídeo da Hilux no rodeio"></video>
+          <div class="cap"><span id="bubbleTxt">Vem prá Hilux!</span></div>
         </div>
         <div class="cover-row">
           <label class="btn ghost" for="coverFile"><svg class="i"><use href="#i-plus"/></svg><span id="coverBtnTxt">Imagem do disco</span></label>
@@ -641,6 +576,11 @@ function setMedia(t) {
     navigator.mediaSession.setActionHandler('nexttrack', () => next(false));
   } catch (e) { /* sem suporte */ }
 }
+function syncVideo() {
+  const v = $('hiluxVid'); if (!v) return;
+  if (S.set.skin === 'hilux' && !audio.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+  else v.pause();
+}
 function setPlaying(on) {
   document.body.classList.toggle('playing', on);
   const h = on ? '#i-pause' : '#i-play';
@@ -649,6 +589,7 @@ function setPlaying(on) {
   $('bPlay').setAttribute('aria-label', on ? 'Pausar' : 'Tocar');
   $('miniPlay').setAttribute('aria-label', on ? 'Pausar' : 'Tocar');
   if (on) startViz();
+  syncVideo();
 }
 function updateNow() {
   const t = byId(S.cur);
@@ -953,6 +894,7 @@ function applySettings() {
   $('bRepeat').setAttribute('aria-label', r === 'one' ? 'Repetir esta música' : r === 'all' ? 'Repetir tudo' : 'Repetir desligado');
   $('rep1').hidden = r !== 'one';
   applyCover();
+  syncVideo();
 }
 $('skinBtn').addEventListener('click', () => {
   S.set.skin = S.set.skin === 'hilux' ? 'neon' : 'hilux';
