@@ -109,11 +109,11 @@ body.hilux .skin .dot { background: var(--amber); box-shadow: 0 0 8px var(--ambe
 .now { display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 100%; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-#viz { width: 100%; height: clamp(100px, 25vh, 200px); display: block; margin-top: auto; }
+#viz { width: 100%; height: clamp(100px, 25vh, 200px); display: block; margin-top: 6px; cursor: pointer; touch-action: manipulation; }
 .meta { text-align: center; width: 100%; min-width: 0; }
 .meta .a { font: 500 14px var(--f-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 2px; }
 
-/* Letreiro de LEDs no topo do leitor: o nome da música passa sempre, com as cores das barras */
+/* Letreiro de LEDs por baixo das barras: o nome da música passa sempre, com as cores das barras */
 .ticker { margin-top: 6px; width: 100%; position: relative; overflow: hidden; border-radius: 14px; padding: 11px 0;
   background: linear-gradient(180deg, rgba(5,10,38,.92), rgba(2,4,15,.92)); border: 1px solid var(--b2);
   box-shadow: 0 0 calc(8px + var(--lvl) * 16px) var(--b1), inset 0 0 14px rgba(47,168,255,.14); }
@@ -295,6 +295,7 @@ body.playing .truck { animation-play-state: running; }
   <main class="views">
     <section class="view" id="v-now" aria-label="A tocar">
       <div class="now">
+        <canvas id="viz" width="600" height="200" role="button" tabindex="0" aria-label="Mudar o estilo da animação" title="Toca para mudar a animação"></canvas>
         <div class="ticker" role="marquee" aria-live="off"><div class="tick-view"><div class="tick-track" id="tickTrack"></div></div></div>
         <div class="meta">
           <div class="a" id="curArtist">Adiciona ficheiros na biblioteca</div>
@@ -319,7 +320,6 @@ body.playing .truck { animation-play-state: running; }
           <video id="hiluxVid" src="video/hilux.mp4" poster="video/hilux-poster.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Vídeo da Hilux no rodeio"></video>
           <div class="cap"><span id="bubbleTxt">Vem prá Hilux!</span></div>
         </div>
-        <canvas id="viz" width="600" height="200" aria-hidden="true"></canvas>
       </div>
     </section>
 
@@ -411,7 +411,7 @@ async function del(store, key) {
 /* ---------- Estado ---------- */
 const S = {
   tracks: [], playlists: [],
-  set: { skin: 'neon', shuffle: false, repeat: 'off', vol: 0.85 },
+  set: { skin: 'neon', shuffle: false, repeat: 'off', vol: 0.85, viz: 0 },
   queue: [], qi: -1, plView: null, tab: 'now'
 };
 const byId = id => S.tracks.find(t => t.id === id);
@@ -632,6 +632,82 @@ function sizeViz() {
   cv.width = Math.round(r.width * vizD); cv.height = Math.round(r.height * vizD);
 }
 function startViz() { if (!vizOn) { vizOn = true; sizeViz(); requestAnimationFrame(drawViz); } }
+const VIZ_NAMES = ['Barras', 'Espelho', 'Onda', 'Círculo', 'Pontos'];
+function rr(x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h / 2));
+  cx.beginPath(); cx.moveTo(x + r, y); cx.lineTo(x + w - r, y); cx.quadraticCurveTo(x + w, y, x + w, y + r);
+  cx.lineTo(x + w, y + h - r); cx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); cx.lineTo(x + r, y + h);
+  cx.quadraticCurveTo(x, y + h, x, y + h - r); cx.lineTo(x, y + r); cx.quadraticCurveTo(x, y, x + r, y); cx.closePath();
+}
+function smooth(p, move) {
+  if (move) cx.moveTo(p[0][0], p[0][1]); else cx.lineTo(p[0][0], p[0][1]);
+  for (let i = 1; i < p.length; i++) cx.quadraticCurveTo(p[i - 1][0], p[i - 1][1], (p[i - 1][0] + p[i][0]) / 2, (p[i - 1][1] + p[i][1]) / 2);
+  const l = p[p.length - 1]; cx.lineTo(l[0], l[1]);
+}
+function drawStyle(ts, w, h, lvl) {
+  const hil = S.set.skin === 'hilux', d = vizD, n = VIZ_NAMES.length;
+  const st = (((S.set.viz | 0) % n) + n) % n;
+  const hue = k => 185 + 130 * (1 - Math.abs(2 * ((((k + ts / 7000) % 1) + 1) % 1) - 1));
+  const col = (k, i) => (hil && i != null && i % 6 === 3) ? '#ffb62e' : 'hsl(' + hue(k).toFixed(0) + ' 100% ' + (hil ? 66 : 62) + '%)';
+  cx.clearRect(0, 0, w, h); cx.shadowBlur = 0; cx.globalAlpha = 1;
+  if (st === 0) {
+    cx.shadowBlur = 12 * d;
+    const gap = 5 * d, bw = (w - gap * (NB - 1)) / NB;
+    for (let i = 0; i < NB; i++) {
+      const bh = Math.max(4, bars[i] * h * 0.96), c = col(i / NB, i);
+      cx.fillStyle = c; cx.shadowColor = c;
+      const x = i * (bw + gap), y = h - bh, r = Math.min(bw / 2, 5 * d);
+      cx.beginPath(); cx.moveTo(x, h); cx.lineTo(x, y + r); cx.quadraticCurveTo(x, y, x + r, y);
+      cx.lineTo(x + bw - r, y); cx.quadraticCurveTo(x + bw, y, x + bw, y + r); cx.lineTo(x + bw, h); cx.closePath(); cx.fill();
+    }
+  } else if (st === 1) {
+    cx.shadowBlur = 12 * d;
+    const gap = 4 * d, bw = (w - gap * (NB - 1)) / NB;
+    for (let j = 0; j < NB; j++) {
+      const v = bars[Math.floor(Math.abs(j - (NB - 1) / 2))], bh = Math.max(4 * d, v * h * 0.92), c = col(j / NB, j);
+      cx.fillStyle = c; cx.shadowColor = c;
+      rr(j * (bw + gap), (h - bh) / 2, bw, bh, Math.min(bw / 2, 5 * d)); cx.fill();
+    }
+  } else if (st === 2) {
+    const mid = h / 2, amp = h * 0.46, step = w / (NB - 1), top = [], bot = [];
+    for (let i = 0; i < NB; i++) { top.push([i * step, mid - bars[i] * amp - d]); bot.push([i * step, mid + bars[i] * amp + d]); }
+    const g = cx.createLinearGradient(0, 0, w, 0);
+    g.addColorStop(0, col(0)); g.addColorStop(0.5, col(0.5)); g.addColorStop(1, col(1));
+    cx.beginPath(); smooth(top, true); smooth(bot.slice().reverse(), false); cx.closePath();
+    cx.globalAlpha = 0.28; cx.fillStyle = g; cx.fill(); cx.globalAlpha = 1;
+    cx.lineWidth = 3 * d; cx.lineJoin = 'round'; cx.strokeStyle = g; cx.shadowColor = col(0.5); cx.shadowBlur = 14 * d; cx.stroke();
+  } else if (st === 3) {
+    const mx = w / 2, my = h / 2, m = Math.min(w, h), R0 = m * 0.2, Lmax = m * 0.28, K = 72, rot = ts / 5000;
+    cx.lineCap = 'round'; cx.lineWidth = Math.max(2 * d, m * 0.022); cx.shadowBlur = 10 * d;
+    for (let k = 0; k < K; k++) {
+      const j = k < K / 2 ? k : K - 1 - k, a = k / K * Math.PI * 2 + rot, len = 3 * d + bars[j] * Lmax, c = col(k / K);
+      cx.strokeStyle = c; cx.shadowColor = c;
+      cx.beginPath(); cx.moveTo(mx + Math.cos(a) * R0, my + Math.sin(a) * R0); cx.lineTo(mx + Math.cos(a) * (R0 + len), my + Math.sin(a) * (R0 + len)); cx.stroke();
+    }
+    cx.lineWidth = 2 * d; cx.strokeStyle = hil ? '#ffb62e' : col(0.5); cx.shadowColor = cx.strokeStyle; cx.shadowBlur = 14 * d;
+    cx.beginPath(); cx.arc(mx, my, R0 * (0.88 + lvl * 0.14), 0, Math.PI * 2); cx.stroke();
+  } else {
+    const C = 30, R = Math.max(6, Math.round(h / (11 * d))), cw = w / C, ch = h / R, rad = Math.min(cw, ch) * 0.36;
+    cx.fillStyle = 'rgba(40,64,150,.35)'; cx.beginPath();
+    for (let c = 0; c < C; c++) for (let r = 0; r < R; r++) { const x = (c + 0.5) * cw, y = (r + 0.5) * ch; cx.moveTo(x + rad, y); cx.arc(x, y, rad, 0, Math.PI * 2); }
+    cx.fill();
+    for (let c = 0; c < C; c++) {
+      const lit = Math.round(bars[Math.min(NB - 1, Math.floor(c * NB / C))] * R);
+      for (let r = 0; r < lit; r++) {
+        const col2 = col(c / C * 0.5 + r / R * 0.5, hil && r === lit - 1 && c % 6 === 3 ? 3 : null);
+        cx.fillStyle = col2; cx.shadowColor = col2; cx.shadowBlur = r === lit - 1 ? 10 * d : 0;
+        cx.beginPath(); cx.arc((c + 0.5) * cw, h - (r + 0.5) * ch, rad, 0, Math.PI * 2); cx.fill();
+      }
+    }
+  }
+  cx.shadowBlur = 0;
+}
+function nextViz() {
+  S.set.viz = (((S.set.viz | 0) + 1) % VIZ_NAMES.length);
+  saveSet(); toast('Animação: ' + VIZ_NAMES[S.set.viz]); startViz();
+}
+cv.addEventListener('click', nextViz);
+cv.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); nextViz(); } });
 function drawViz(ts) {
   const w = cv.width, h = cv.height, playing = !audio.paused;
   if (analyser && playing) analyser.getByteFrequencyData(freq);
@@ -652,22 +728,7 @@ function drawViz(ts) {
   rs.setProperty('--lvl', lvl.toFixed(3)); rs.setProperty('--hi', hiv.toFixed(3));
   const wave = k => { const t = (k + ts / 7000) % 1; return 'hsl(' + (185 + 130 * (1 - Math.abs(2 * t - 1))).toFixed(0) + ' 100% 62%)'; };
   rs.setProperty('--b1', wave(0)); rs.setProperty('--b2', wave(0.33)); rs.setProperty('--b3', wave(0.66));
-  cx.clearRect(0, 0, w, h);
-  const hil = S.set.skin === 'hilux';
-  cx.shadowBlur = 12 * vizD;
-  const gap = 5 * vizD, bw = (w - gap * (NB - 1)) / NB;
-  for (let i = 0; i < NB; i++) {
-    const bh = Math.max(4, bars[i] * h * 0.96);
-    const tt = (i / NB + ts / 7000) % 1;
-    const hue = 185 + 130 * (1 - Math.abs(2 * tt - 1));
-    const col = (hil && i % 6 === 3) ? '#ffb62e' : 'hsl(' + hue.toFixed(0) + ' 100% ' + (hil ? 66 : 62) + '%)';
-    cx.fillStyle = col; cx.shadowColor = col;
-    const x = i * (bw + gap), y = h - bh, r = Math.min(bw / 2, 5 * vizD);
-    cx.beginPath();
-    cx.moveTo(x, h); cx.lineTo(x, y + r); cx.quadraticCurveTo(x, y, x + r, y);
-    cx.lineTo(x + bw - r, y); cx.quadraticCurveTo(x + bw, y, x + bw, y + r); cx.lineTo(x + bw, h); cx.closePath();
-    cx.fill();
-  }
+  drawStyle(ts, w, h, lvl);
   if (playing || peak > 0.01) requestAnimationFrame(drawViz);
   else { vizOn = false; ['--b1', '--b2', '--b3'].forEach(k => rs.removeProperty(k)); }
 }
