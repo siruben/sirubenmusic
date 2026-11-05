@@ -43,6 +43,10 @@ img { max-width: 100%; }
   --lime: #b8ff3a;
   --danger: #ff5d7a;
   --lvl: 0;
+  --hi: 0;
+  --b1: #19f2ff;
+  --b2: #a066ff;
+  --b3: #ff3df0;
   --f-display: "Bungee", "Impact", sans-serif;
   --f-body: "Barlow", system-ui, sans-serif;
   --f-cond: "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -86,10 +90,8 @@ svg.i.fill { fill: currentColor; stroke: none; }
 /* Cabeçalho */
 .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; padding-bottom: 6px; }
 .brand { font: 400 22px/1 var(--f-display); letter-spacing: .02em; white-space: nowrap;
-  background: linear-gradient(90deg, var(--cyan), var(--blue-hot) 45%, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 8px rgba(47,168,255,.8)) drop-shadow(0 0 18px rgba(255,61,240,.5)); }
-body.hilux .brand { background: linear-gradient(90deg, var(--amber), var(--pink) 50%, var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 0 8px rgba(255,182,46,.7)) drop-shadow(0 0 18px rgba(25,242,255,.5)); }
+  background: linear-gradient(90deg, var(--b1), var(--b2) 50%, var(--b3)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 calc(6px + var(--lvl) * 8px) var(--b1)) drop-shadow(0 0 calc(14px + var(--lvl) * 16px) var(--b3)); }
 .skin {
   display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 999px;
   border: 1px solid var(--line); background: rgba(11,20,56,.7); font: 600 13px var(--f-cond); letter-spacing: .08em; text-transform: uppercase; color: var(--mute);
@@ -105,29 +107,16 @@ body.hilux .skin .dot { background: var(--amber); box-shadow: 0 0 8px var(--ambe
 
 /* Ecrã Agora */
 .now { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.stage { position: relative; width: min(64vw, 300px, 38vh); aspect-ratio: 1; margin-top: 4px; max-width: 100%; }
-.halo { position: absolute; inset: -14%; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(47,168,255,calc(.25 + var(--lvl) * .55)), rgba(255,61,240,calc(.08 + var(--lvl) * .25)) 55%, transparent 74%);
-  transform: scale(calc(1 + var(--lvl) * .12)); transition: transform .08s linear;
-  animation: hue 10s linear infinite; animation-play-state: paused; }
-.disc {
-  position: absolute; inset: 0; border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 50%, transparent 0 27%, rgba(0,0,0,.55) 27.5% 28.5%, transparent 29%),
-    repeating-radial-gradient(circle at 50% 50%, #050a22 0 2px, #0a1442 2px 4px),
-    conic-gradient(from 20deg, rgba(25,242,255,0), rgba(25,242,255,.45), rgba(160,102,255,0) 30%, rgba(255,61,240,0) 48%, rgba(255,61,240,.42) 68%, rgba(160,102,255,0) 82%, rgba(25,242,255,0));
-  border: 2px solid var(--blue);
-  box-shadow: 0 0 0 1px rgba(138,216,255,.4), 0 0 22px var(--blue), 0 0 54px rgba(160,102,255,.6), 0 0 90px rgba(255,61,240,.35), inset 0 0 30px rgba(47,168,255,.35);
-  animation: spin 7s linear infinite; animation-play-state: paused;
-}
-body.playing .disc { animation-play-state: running; }
-.label { position: absolute; inset: 31%; border-radius: 50%; display: grid; place-items: center;
-  background: radial-gradient(circle at 35% 30%, var(--cyan), var(--blue-deep) 58%, var(--violet));
-  box-shadow: 0 0 18px var(--blue); font: 400 clamp(20px, 6vw, 32px)/1 var(--f-display); color: #02040f; }
-body.hilux .label { background: radial-gradient(circle at 35% 30%, #ffe3a0, var(--amber) 70%); box-shadow: 0 0 18px var(--amber); }
-.label::after { content: ""; position: absolute; width: 9%; aspect-ratio: 1; border-radius: 50%; background: var(--bg); }
-.label span { position: relative; z-index: 1; }
-.label::after { z-index: 2; }
+.stage { position: relative; height: min(40vh, 300px); aspect-ratio: 4 / 5; margin-top: 8px; max-width: 78%; }
+.halo, .halo2 { position: absolute; border-radius: 50%; pointer-events: none; }
+.halo { inset: -22%; background: radial-gradient(closest-side, var(--b1), transparent 72%); opacity: calc(.16 + var(--lvl) * .5); transform: scale(calc(1 + var(--lvl) * .14)); }
+.halo2 { inset: -34% -40%; background: radial-gradient(closest-side, var(--b3), transparent 70%); opacity: calc(.1 + var(--lvl) * .38); transform: scale(calc(1 + var(--lvl) * .22)); }
+.spk { position: absolute; inset: 0; transform: translate(var(--jx, 0px), var(--jy, 0px)); filter: drop-shadow(0 0 calc(6px + var(--lvl) * 14px) var(--b1)); }
+.spk svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.spk .tw, .spk .wf, .spk .dc { transform-box: fill-box; transform-origin: center; }
+.spk .tw { transform: scale(calc(1 + var(--hi) * .22)); }
+.spk .wf { transform: scale(calc(1 + var(--lvl) * .1)); }
+.spk .dc { transform: scale(calc(1 + var(--lvl) * .32)); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 #viz { width: 100%; height: 56px; display: block; }
@@ -172,10 +161,6 @@ body.hilux .scene { display: block; order: -1; }
 .scene svg { width: 100%; height: auto; display: block; }
 .scene .tag { font: 400 8px var(--f-display); letter-spacing: .14em; fill: #ffe3a0; }
 .scene .bubble text { font: 400 10px var(--f-display); fill: #2a0f3a; }
-body.hilux .stage { width: min(46vw, 220px, 26vh); }
-.cover-row { display: none; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
-body.hilux .cover-row { display: flex; }
-.label.has-img span { display: none; }
 .scene { position: relative; aspect-ratio: 2 / 1; background: #02040f; }
 .scene video { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 55%; }
 .scene .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 7px; text-align: center; pointer-events: none;
@@ -183,7 +168,7 @@ body.hilux .cover-row { display: flex; }
   font: 400 12px/1 var(--f-display); letter-spacing: .12em; color: #ffe3a0;
   text-shadow: 0 0 8px var(--pink), 0 0 16px var(--pink); }
 body.hilux .now { gap: 12px; }
-body.hilux .stage { width: min(32vw, 125px, 16vh); }
+body.hilux .stage { height: min(19vh, 150px); }
 body.hilux #viz { height: 40px; }
 .road-dash { stroke-dasharray: 18 16; animation: road .5s linear infinite; animation-play-state: paused; }
 body.playing .road-dash { animation-play-state: running; }
@@ -241,8 +226,6 @@ body.playing .truck { animation-play-state: running; }
 .row.on .chk { background: var(--c, var(--blue)); border-color: var(--c, var(--blue)); box-shadow: 0 0 10px var(--c, var(--blue)); }
 .pl { border-color: color-mix(in srgb, var(--c, var(--blue)) 55%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--c, var(--blue)) 25%, transparent); }
 .pl b { color: var(--c, var(--fg)); }
-body.playing .halo { animation-play-state: running; }
-@keyframes hue { to { filter: hue-rotate(360deg); } }
 
 /* Mini-player */
 .mini { display: none; align-items: center; gap: 10px; padding: 6px 8px 6px 12px; margin-bottom: 8px; border-radius: 14px;
@@ -278,9 +261,10 @@ body.playing .halo { animation-play-state: running; }
 
 @media (prefers-reduced-motion: reduce) {
   .disc, .road-dash, .wheel, .truck, .stars, body.playing .play, .sheet { animation: none !important; }
-  .halo { transition: none; }
+  .spk { transform: none !important; }
+  .spk .tw, .spk .wf, .spk .dc, .halo, .halo2 { transform: none !important; }
 }
-@media (max-height: 640px) { .stage { width: min(40vw, 200px); } .play { width: 64px; height: 64px; } }
+@media (max-height: 640px) { .stage { height: min(32vh, 200px); } .play { width: 64px; height: 64px; } }
 </style>
 </head>
 <body>
@@ -312,10 +296,35 @@ body.playing .halo { animation-play-state: running; }
   <main class="views">
     <section class="view" id="v-now" aria-label="A tocar">
       <div class="now">
-        <div class="stage">
+        <div class="stage" aria-hidden="true">
+          <div class="halo2"></div>
           <div class="halo"></div>
-          <div class="disc"></div>
-          <div class="label"><span id="lbl">♪</span></div>
+          <div class="spk">
+            <svg viewBox="0 0 200 250">
+              <defs>
+                <linearGradient id="cabG" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" style="stop-color:var(--b1)"/><stop offset=".55" style="stop-color:var(--b2)"/><stop offset="1" style="stop-color:var(--b3)"/>
+                </linearGradient>
+                <radialGradient id="coneG" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#16246e"/><stop offset="1" stop-color="#050a22"/></radialGradient>
+                <radialGradient id="capG" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#d8f8ff"/><stop offset=".5" style="stop-color:var(--b1)"/><stop offset="1" style="stop-color:var(--b2)"/></radialGradient>
+              </defs>
+              <rect x="8" y="6" width="184" height="238" rx="26" fill="#050a26" stroke="url(#cabG)" stroke-width="3.5"/>
+              <rect x="18" y="16" width="164" height="218" rx="18" fill="none" stroke="#1a2d7a" stroke-width="1"/>
+              <circle cx="168" cy="30" r="3" style="fill:var(--b1)"/>
+              <g class="tw">
+                <circle cx="100" cy="60" r="27" fill="#07103a" style="stroke:var(--b3)" stroke-width="3"/>
+                <circle cx="100" cy="60" r="17" fill="url(#coneG)"/>
+                <circle cx="100" cy="60" r="8" style="fill:var(--b1)" opacity=".9"/>
+              </g>
+              <g class="wf">
+                <circle cx="100" cy="162" r="64" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
+                <circle cx="100" cy="162" r="52" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
+                <circle cx="100" cy="162" r="40" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <circle cx="100" cy="162" r="29" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <g class="dc"><circle cx="100" cy="162" r="18" fill="url(#capG)"/><circle cx="95" cy="156" r="5" fill="#fff" opacity=".35"/></g>
+              </g>
+            </svg>
+          </div>
         </div>
         <canvas id="viz" width="600" height="112" aria-hidden="true"></canvas>
         <div class="meta">
@@ -341,11 +350,6 @@ body.playing .halo { animation-play-state: running; }
         <div class="scene">
           <video id="hiluxVid" src="video/hilux.mp4" poster="video/hilux-poster.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Vídeo da Hilux no rodeio"></video>
           <div class="cap"><span id="bubbleTxt">Vem prá Hilux!</span></div>
-        </div>
-        <div class="cover-row">
-          <label class="btn ghost" for="coverFile"><svg class="i"><use href="#i-plus"/></svg><span id="coverBtnTxt">Imagem do disco</span></label>
-          <button class="btn ghost" id="coverDel" type="button" hidden>Tirar</button>
-          <input type="file" id="coverFile" class="sr" accept="image/*">
         </div>
       </div>
     </section>
@@ -595,7 +599,6 @@ function updateNow() {
   const t = byId(S.cur);
   $('curTitle').textContent = t ? t.title : 'Nenhuma música';
   $('curArtist').textContent = t ? (t.artist || (S.set.skin === 'hilux' ? 'Célia e Rubinho' : 'Sem artista')) : 'Adiciona ficheiros na biblioteca';
-  $('lbl').textContent = t ? (t.title.trim()[0] || '♪').toUpperCase() : '♪';
   $('miniTitle').textContent = t ? t.title : '—';
   $('mini').classList.toggle('show', !!t && S.tab !== 'now');
   $('tDur').textContent = fmt(audio.duration || (t && t.dur) || 0);
@@ -653,7 +656,15 @@ function drawViz(ts) {
     peak = Math.max(peak, bars[i]);
   }
   let low = 0; for (let i = 0; i < 6; i++) low += bars[i];
-  document.documentElement.style.setProperty('--lvl', Math.min(1, low / 6 * 1.4).toFixed(3));
+  let high = 0; for (let i = 10; i < 24; i++) high += bars[i];
+  const lvl = Math.min(1, low / 6 * 1.4), hiv = Math.min(1, high / 14 * 2.2);
+  const rs = document.documentElement.style;
+  rs.setProperty('--lvl', lvl.toFixed(3)); rs.setProperty('--hi', hiv.toFixed(3));
+  const wave = k => { const t = (k + ts / 7000) % 1; return 'hsl(' + (185 + 130 * (1 - Math.abs(2 * t - 1))).toFixed(0) + ' 100% 62%)'; };
+  rs.setProperty('--b1', wave(0)); rs.setProperty('--b2', wave(0.33)); rs.setProperty('--b3', wave(0.66));
+  const shake = lvl * lvl * 2.4;
+  rs.setProperty('--jx', ((Math.random() - 0.5) * 2 * shake).toFixed(2) + 'px');
+  rs.setProperty('--jy', ((Math.random() - 0.5) * 2 * shake).toFixed(2) + 'px');
   cx.clearRect(0, 0, w, h);
   const hil = S.set.skin === 'hilux';
   cx.shadowBlur = 12;
@@ -670,7 +681,8 @@ function drawViz(ts) {
     cx.lineTo(x + bw - r, y); cx.quadraticCurveTo(x + bw, y, x + bw, y + r); cx.lineTo(x + bw, h); cx.closePath();
     cx.fill();
   }
-  if (playing || peak > 0.01) requestAnimationFrame(drawViz); else vizOn = false;
+  if (playing || peak > 0.01) requestAnimationFrame(drawViz);
+  else { vizOn = false; ['--b1', '--b2', '--b3', '--jx', '--jy'].forEach(k => rs.removeProperty(k)); }
 }
 
 /* ---------- Biblioteca ---------- */
@@ -893,7 +905,6 @@ function applySettings() {
   $('bRepeat').setAttribute('aria-pressed', String(r !== 'off'));
   $('bRepeat').setAttribute('aria-label', r === 'one' ? 'Repetir esta música' : r === 'all' ? 'Repetir tudo' : 'Repetir desligado');
   $('rep1').hidden = r !== 'one';
-  applyCover();
   syncVideo();
 }
 $('skinBtn').addEventListener('click', () => {
@@ -917,35 +928,7 @@ $('file').addEventListener('change', e => { const f = e.target.files; if (f && f
 window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer && e.dataTransfer.files.length) importFiles(e.dataTransfer.files); });
 
-/* ---------- Tema Hilux: imagem do disco e balão ---------- */
-let coverUrl = null;
-function applyCover() {
-  const el = document.querySelector('.label');
-  const on = S.set.skin === 'hilux' && !!coverUrl;
-  el.classList.toggle('has-img', on);
-  el.style.backgroundImage = on ? 'url("' + coverUrl + '")' : '';
-  el.style.backgroundSize = on ? 'cover' : '';
-  el.style.backgroundPosition = on ? 'center' : '';
-  $('coverDel').hidden = !coverUrl;
-  $('coverBtnTxt').textContent = coverUrl ? 'Mudar imagem' : 'Imagem do disco';
-}
-async function loadCover() {
-  const b = await get('blobs', 'cover');
-  if (b) { coverUrl = URL.createObjectURL(b); applyCover(); }
-}
-$('coverFile').addEventListener('change', async e => {
-  const f = e.target.files && e.target.files[0]; e.target.value = '';
-  if (!f) return;
-  if (!/^image\//.test(f.type)) { toast('Escolhe uma imagem'); return; }
-  await put('blobs', 'cover', f);
-  if (coverUrl) URL.revokeObjectURL(coverUrl);
-  coverUrl = URL.createObjectURL(f); applyCover(); toast('Imagem do disco guardada');
-});
-$('coverDel').addEventListener('click', async () => {
-  await del('blobs', 'cover');
-  if (coverUrl) URL.revokeObjectURL(coverUrl);
-  coverUrl = null; applyCover(); toast('Imagem removida');
-});
+/* ---------- Tema Hilux: frases na legenda do vídeo ---------- */
 const PHRASES = ['Vem prá Hilux!', 'Bora, meu bem?', 'Segura o chapéu!', 'Pé na estrada!', 'Liga o som!'];
 let phraseI = 0;
 setInterval(() => {
@@ -962,7 +945,7 @@ setInterval(() => {
   S.tracks = Array.isArray(tr) ? tr : [];
   S.playlists = Array.isArray(pl) ? pl : [];
   Object.assign(S.set, se || {});
-  applySettings(); renderLib(); renderPl(); updateNow(); startViz(); loadCover();
+  applySettings(); renderLib(); renderPl(); updateNow(); startViz();
 })();
 })();
 </script>
