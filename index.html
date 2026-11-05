@@ -107,16 +107,17 @@ body.hilux .skin .dot { background: var(--amber); box-shadow: 0 0 8px var(--ambe
 
 /* Ecrã Agora */
 .now { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.stage { position: relative; height: min(40vh, 300px); aspect-ratio: 4 / 5; margin-top: 8px; max-width: 78%; }
+.stage { position: relative; width: min(100%, 360px); aspect-ratio: 320 / 130; margin-top: 22px; }
 .halo, .halo2 { position: absolute; border-radius: 50%; pointer-events: none; }
-.halo { inset: -22%; background: radial-gradient(closest-side, var(--b1), transparent 72%); opacity: calc(.16 + var(--lvl) * .5); transform: scale(calc(1 + var(--lvl) * .14)); }
-.halo2 { inset: -34% -40%; background: radial-gradient(closest-side, var(--b3), transparent 70%); opacity: calc(.1 + var(--lvl) * .38); transform: scale(calc(1 + var(--lvl) * .22)); }
-.spk { position: absolute; inset: 0; transform: translate(var(--jx, 0px), var(--jy, 0px)); filter: drop-shadow(0 0 calc(6px + var(--lvl) * 14px) var(--b1)); }
+.halo { inset: -45% 0; background: radial-gradient(closest-side, var(--b1), transparent 72%); opacity: calc(.14 + var(--lvl) * .42); transform: scale(calc(1 + var(--lvl) * .08)); }
+.halo2 { inset: -70% 0; background: radial-gradient(closest-side, var(--b3), transparent 70%); opacity: calc(.08 + var(--lvl) * .3); transform: scale(calc(1 + var(--lvl) * .12)); }
+.spk { position: absolute; inset: 0; filter: drop-shadow(0 0 calc(6px + var(--lvl) * 12px) var(--b1)); }
 .spk svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.spk .tw, .spk .wf, .spk .dc { transform-box: fill-box; transform-origin: center; }
-.spk .tw { transform: scale(calc(1 + var(--hi) * .22)); }
-.spk .wf { transform: scale(calc(1 + var(--lvl) * .1)); }
-.spk .dc { transform: scale(calc(1 + var(--lvl) * .32)); }
+.spk .wl, .spk .wr, .spk .dc { transform-box: fill-box; transform-origin: center; }
+.spk .wl { transform: scale(calc(1 + var(--lvl) * .05)); }
+.spk .wr { transform: scale(calc(1 + (var(--lvl) * .7 + var(--hi) * .5) * .05)); }
+.spk .wl .dc { transform: scale(calc(1 + var(--lvl) * .16)); }
+.spk .wr .dc { transform: scale(calc(1 + (var(--lvl) * .7 + var(--hi) * .5) * .16)); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 #viz { width: 100%; height: 56px; display: block; }
@@ -168,7 +169,8 @@ body.hilux .scene { display: block; order: -1; }
   font: 400 12px/1 var(--f-display); letter-spacing: .12em; color: #ffe3a0;
   text-shadow: 0 0 8px var(--pink), 0 0 16px var(--pink); }
 body.hilux .now { gap: 12px; }
-body.hilux .stage { height: min(19vh, 150px); }
+body.hilux .stage { width: min(80%, 290px); margin-top: 16px; }
+body:not(.hilux) #viz { height: 92px; }
 body.hilux #viz { height: 40px; }
 .road-dash { stroke-dasharray: 18 16; animation: road .5s linear infinite; animation-play-state: paused; }
 body.playing .road-dash { animation-play-state: running; }
@@ -261,10 +263,9 @@ body.playing .truck { animation-play-state: running; }
 
 @media (prefers-reduced-motion: reduce) {
   .disc, .road-dash, .wheel, .truck, .stars, body.playing .play, .sheet { animation: none !important; }
-  .spk { transform: none !important; }
-  .spk .tw, .spk .wf, .spk .dc, .halo, .halo2 { transform: none !important; }
+  .spk .wl, .spk .wr, .spk .dc, .halo, .halo2 { transform: none !important; }
 }
-@media (max-height: 640px) { .stage { height: min(32vh, 200px); } .play { width: 64px; height: 64px; } }
+@media (max-height: 640px) { .stage { width: min(86%, 300px); } body:not(.hilux) #viz { height: 64px; } .play { width: 64px; height: 64px; } }
 </style>
 </head>
 <body>
@@ -300,7 +301,7 @@ body.playing .truck { animation-play-state: running; }
           <div class="halo2"></div>
           <div class="halo"></div>
           <div class="spk">
-            <svg viewBox="0 0 200 250">
+            <svg viewBox="0 0 320 130">
               <defs>
                 <linearGradient id="cabG" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0" style="stop-color:var(--b1)"/><stop offset=".55" style="stop-color:var(--b2)"/><stop offset="1" style="stop-color:var(--b3)"/>
@@ -308,20 +309,23 @@ body.playing .truck { animation-play-state: running; }
                 <radialGradient id="coneG" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#16246e"/><stop offset="1" stop-color="#050a22"/></radialGradient>
                 <radialGradient id="capG" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#d8f8ff"/><stop offset=".5" style="stop-color:var(--b1)"/><stop offset="1" style="stop-color:var(--b2)"/></radialGradient>
               </defs>
-              <rect x="8" y="6" width="184" height="238" rx="26" fill="#050a26" stroke="url(#cabG)" stroke-width="3.5"/>
-              <rect x="18" y="16" width="164" height="218" rx="18" fill="none" stroke="#1a2d7a" stroke-width="1"/>
-              <circle cx="168" cy="30" r="3" style="fill:var(--b1)"/>
-              <g class="tw">
-                <circle cx="100" cy="60" r="27" fill="#07103a" style="stroke:var(--b3)" stroke-width="3"/>
-                <circle cx="100" cy="60" r="17" fill="url(#coneG)"/>
-                <circle cx="100" cy="60" r="8" style="fill:var(--b1)" opacity=".9"/>
+              <rect x="6" y="6" width="308" height="118" rx="24" fill="#050a26" stroke="url(#cabG)" stroke-width="3.5"/>
+              <rect x="15" y="15" width="290" height="100" rx="17" fill="none" stroke="#1a2d7a" stroke-width="1"/>
+              <line x1="160" y1="28" x2="160" y2="86" stroke="#1a2d7a" stroke-width="1.5"/>
+              <circle cx="160" cy="100" r="3.2" style="fill:var(--b1)"/>
+              <g class="wl">
+                <circle cx="82" cy="65" r="46" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
+                <circle cx="82" cy="65" r="37" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
+                <circle cx="82" cy="65" r="27" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <circle cx="82" cy="65" r="19" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <g class="dc"><circle cx="82" cy="65" r="12" fill="url(#capG)"/><circle cx="78.5" cy="61" r="3.5" fill="#fff" opacity=".35"/></g>
               </g>
-              <g class="wf">
-                <circle cx="100" cy="162" r="64" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
-                <circle cx="100" cy="162" r="52" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
-                <circle cx="100" cy="162" r="40" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <circle cx="100" cy="162" r="29" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <g class="dc"><circle cx="100" cy="162" r="18" fill="url(#capG)"/><circle cx="95" cy="156" r="5" fill="#fff" opacity=".35"/></g>
+              <g class="wr">
+                <circle cx="238" cy="65" r="46" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
+                <circle cx="238" cy="65" r="37" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
+                <circle cx="238" cy="65" r="27" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <circle cx="238" cy="65" r="19" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
+                <g class="dc"><circle cx="238" cy="65" r="12" fill="url(#capG)"/><circle cx="234.5" cy="61" r="3.5" fill="#fff" opacity=".35"/></g>
               </g>
             </svg>
           </div>
@@ -662,9 +666,6 @@ function drawViz(ts) {
   rs.setProperty('--lvl', lvl.toFixed(3)); rs.setProperty('--hi', hiv.toFixed(3));
   const wave = k => { const t = (k + ts / 7000) % 1; return 'hsl(' + (185 + 130 * (1 - Math.abs(2 * t - 1))).toFixed(0) + ' 100% 62%)'; };
   rs.setProperty('--b1', wave(0)); rs.setProperty('--b2', wave(0.33)); rs.setProperty('--b3', wave(0.66));
-  const shake = lvl * lvl * 2.4;
-  rs.setProperty('--jx', ((Math.random() - 0.5) * 2 * shake).toFixed(2) + 'px');
-  rs.setProperty('--jy', ((Math.random() - 0.5) * 2 * shake).toFixed(2) + 'px');
   cx.clearRect(0, 0, w, h);
   const hil = S.set.skin === 'hilux';
   cx.shadowBlur = 12;
@@ -682,7 +683,7 @@ function drawViz(ts) {
     cx.fill();
   }
   if (playing || peak > 0.01) requestAnimationFrame(drawViz);
-  else { vizOn = false; ['--b1', '--b2', '--b3', '--jx', '--jy'].forEach(k => rs.removeProperty(k)); }
+  else { vizOn = false; ['--b1', '--b2', '--b3'].forEach(k => rs.removeProperty(k)); }
 }
 
 /* ---------- Biblioteca ---------- */

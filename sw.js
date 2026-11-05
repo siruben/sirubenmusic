@@ -1,6 +1,6 @@
 /* Siruben Music: guarda a app no telemóvel para abrir sem internet.
    Ao mudares o index.html, aumenta o número da versão para forçar a atualização. */
-const CACHE = 'siruben-music-v3';
+const CACHE = 'siruben-music-v4';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png', './video/hilux-poster.jpg', './video/hilux.mp4'];
 
 self.addEventListener('install', e => {
