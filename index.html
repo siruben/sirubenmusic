@@ -109,12 +109,12 @@ body.hilux .skin .dot { background: var(--amber); box-shadow: 0 0 8px var(--ambe
 .now { display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 100%; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-#viz { width: 100%; height: clamp(100px, 25vh, 200px); display: block; margin-top: 6px; }
+#viz { width: 100%; height: clamp(100px, 25vh, 200px); display: block; margin-top: auto; }
 .meta { text-align: center; width: 100%; min-width: 0; }
 .meta .a { font: 500 14px var(--f-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 2px; }
 
-/* Letreiro de LEDs no rodapé: o nome da música passa sempre, com as cores das barras */
-.ticker { margin-top: auto; width: 100%; position: relative; overflow: hidden; border-radius: 14px; padding: 11px 0;
+/* Letreiro de LEDs no topo do leitor: o nome da música passa sempre, com as cores das barras */
+.ticker { margin-top: 6px; width: 100%; position: relative; overflow: hidden; border-radius: 14px; padding: 11px 0;
   background: linear-gradient(180deg, rgba(5,10,38,.92), rgba(2,4,15,.92)); border: 1px solid var(--b2);
   box-shadow: 0 0 calc(8px + var(--lvl) * 16px) var(--b1), inset 0 0 14px rgba(47,168,255,.14); }
 .tick-view { overflow: hidden; filter: drop-shadow(0 0 calc(3px + var(--lvl) * 7px) var(--b1));
@@ -295,7 +295,7 @@ body.playing .truck { animation-play-state: running; }
   <main class="views">
     <section class="view" id="v-now" aria-label="A tocar">
       <div class="now">
-        <canvas id="viz" width="600" height="200" aria-hidden="true"></canvas>
+        <div class="ticker" role="marquee" aria-live="off"><div class="tick-view"><div class="tick-track" id="tickTrack"></div></div></div>
         <div class="meta">
           <div class="a" id="curArtist">Adiciona ficheiros na biblioteca</div>
         </div>
@@ -319,7 +319,7 @@ body.playing .truck { animation-play-state: running; }
           <video id="hiluxVid" src="video/hilux.mp4" poster="video/hilux-poster.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Vídeo da Hilux no rodeio"></video>
           <div class="cap"><span id="bubbleTxt">Vem prá Hilux!</span></div>
         </div>
-        <div class="ticker" role="marquee" aria-live="off"><div class="tick-view"><div class="tick-track" id="tickTrack"></div></div></div>
+        <canvas id="viz" width="600" height="200" aria-hidden="true"></canvas>
       </div>
     </section>
 
