@@ -106,25 +106,24 @@ body.hilux .skin .dot { background: var(--amber); box-shadow: 0 0 8px var(--ambe
 .view::-webkit-scrollbar { display: none; }
 
 /* Ecrã Agora */
-.now { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-.stage { position: relative; width: min(100%, 360px); aspect-ratio: 320 / 130; margin-top: 22px; }
-.halo, .halo2 { position: absolute; border-radius: 50%; pointer-events: none; }
-.halo { inset: -45% 0; background: radial-gradient(closest-side, var(--b1), transparent 72%); opacity: calc(.14 + var(--lvl) * .42); transform: scale(calc(1 + var(--lvl) * .08)); }
-.halo2 { inset: -70% 0; background: radial-gradient(closest-side, var(--b3), transparent 70%); opacity: calc(.08 + var(--lvl) * .3); transform: scale(calc(1 + var(--lvl) * .12)); }
-.spk { position: absolute; inset: 0; filter: drop-shadow(0 0 calc(6px + var(--lvl) * 12px) var(--b1)); }
-.spk svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.spk .wl, .spk .wr, .spk .dc { transform-box: fill-box; transform-origin: center; }
-.spk .wl { transform: scale(calc(1 + var(--lvl) * .05)); }
-.spk .wr { transform: scale(calc(1 + (var(--lvl) * .7 + var(--hi) * .5) * .05)); }
-.spk .wl .dc { transform: scale(calc(1 + var(--lvl) * .16)); }
-.spk .wr .dc { transform: scale(calc(1 + (var(--lvl) * .7 + var(--hi) * .5) * .16)); }
+.now { display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 100%; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-#viz { width: 100%; height: 56px; display: block; }
+#viz { width: 100%; height: clamp(100px, 25vh, 200px); display: block; margin-top: 6px; }
 .meta { text-align: center; width: 100%; min-width: 0; }
-.meta .t { font: 700 24px/1.15 var(--f-cond); letter-spacing: .02em; overflow-wrap: anywhere; text-wrap: balance;
-  text-shadow: 0 0 14px rgba(47,168,255,.5); }
 .meta .a { font: 500 14px var(--f-cond); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-top: 2px; }
+
+/* Letreiro de LEDs no rodapé: o nome da música passa sempre, com as cores das barras */
+.ticker { margin-top: auto; width: 100%; position: relative; overflow: hidden; border-radius: 14px; padding: 11px 0;
+  background: linear-gradient(180deg, rgba(5,10,38,.92), rgba(2,4,15,.92)); border: 1px solid var(--b2);
+  box-shadow: 0 0 calc(8px + var(--lvl) * 16px) var(--b1), inset 0 0 14px rgba(47,168,255,.14); }
+.tick-view { overflow: hidden; filter: drop-shadow(0 0 calc(3px + var(--lvl) * 7px) var(--b1));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.tick-track { display: inline-flex; white-space: nowrap; will-change: transform; animation: tick var(--dur, 14s) linear infinite; }
+.tu { display: inline-flex; align-items: center; font: 400 22px/1.15 var(--f-display); letter-spacing: .04em;
+  background: linear-gradient(90deg, var(--b1), var(--b2) 50%, var(--b3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tu b { font-weight: 400; margin: 0 .9em; font-size: .7em; }
+@keyframes tick { to { transform: translateX(-50%); } }
 
 .seek { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; font: 500 13px var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; }
 input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; margin: 0; }
@@ -169,9 +168,7 @@ body.hilux .scene { display: block; order: -1; }
   font: 400 12px/1 var(--f-display); letter-spacing: .12em; color: #ffe3a0;
   text-shadow: 0 0 8px var(--pink), 0 0 16px var(--pink); }
 body.hilux .now { gap: 12px; }
-body.hilux .stage { width: min(80%, 290px); margin-top: 16px; }
-body:not(.hilux) #viz { height: 92px; }
-body.hilux #viz { height: 40px; }
+body.hilux #viz { height: 96px; }
 .road-dash { stroke-dasharray: 18 16; animation: road .5s linear infinite; animation-play-state: paused; }
 body.playing .road-dash { animation-play-state: running; }
 @keyframes road { to { stroke-dashoffset: 34; } }
@@ -263,9 +260,10 @@ body.playing .truck { animation-play-state: running; }
 
 @media (prefers-reduced-motion: reduce) {
   .disc, .road-dash, .wheel, .truck, .stars, body.playing .play, .sheet { animation: none !important; }
-  .spk .wl, .spk .wr, .spk .dc, .halo, .halo2 { transform: none !important; }
+  .tick-track { animation: none !important; justify-content: center; width: 100%; }
+  .tick-track .tu:nth-child(n+2) { display: none; }
 }
-@media (max-height: 640px) { .stage { width: min(86%, 300px); } body:not(.hilux) #viz { height: 64px; } .play { width: 64px; height: 64px; } }
+@media (max-height: 640px) { #viz { height: 90px; } .play { width: 64px; height: 64px; } }
 </style>
 </head>
 <body>
@@ -297,42 +295,8 @@ body.playing .truck { animation-play-state: running; }
   <main class="views">
     <section class="view" id="v-now" aria-label="A tocar">
       <div class="now">
-        <div class="stage" aria-hidden="true">
-          <div class="halo2"></div>
-          <div class="halo"></div>
-          <div class="spk">
-            <svg viewBox="0 0 320 130">
-              <defs>
-                <linearGradient id="cabG" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" style="stop-color:var(--b1)"/><stop offset=".55" style="stop-color:var(--b2)"/><stop offset="1" style="stop-color:var(--b3)"/>
-                </linearGradient>
-                <radialGradient id="coneG" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#16246e"/><stop offset="1" stop-color="#050a22"/></radialGradient>
-                <radialGradient id="capG" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#d8f8ff"/><stop offset=".5" style="stop-color:var(--b1)"/><stop offset="1" style="stop-color:var(--b2)"/></radialGradient>
-              </defs>
-              <rect x="6" y="6" width="308" height="118" rx="24" fill="#050a26" stroke="url(#cabG)" stroke-width="3.5"/>
-              <rect x="15" y="15" width="290" height="100" rx="17" fill="none" stroke="#1a2d7a" stroke-width="1"/>
-              <line x1="160" y1="28" x2="160" y2="86" stroke="#1a2d7a" stroke-width="1.5"/>
-              <circle cx="160" cy="100" r="3.2" style="fill:var(--b1)"/>
-              <g class="wl">
-                <circle cx="82" cy="65" r="46" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
-                <circle cx="82" cy="65" r="37" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
-                <circle cx="82" cy="65" r="27" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <circle cx="82" cy="65" r="19" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <g class="dc"><circle cx="82" cy="65" r="12" fill="url(#capG)"/><circle cx="78.5" cy="61" r="3.5" fill="#fff" opacity=".35"/></g>
-              </g>
-              <g class="wr">
-                <circle cx="238" cy="65" r="46" fill="#07103a" style="stroke:var(--b2)" stroke-width="4"/>
-                <circle cx="238" cy="65" r="37" fill="url(#coneG)" style="stroke:var(--b3)" stroke-width="1.5"/>
-                <circle cx="238" cy="65" r="27" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <circle cx="238" cy="65" r="19" fill="none" stroke="#2a3fa8" stroke-width="1.5"/>
-                <g class="dc"><circle cx="238" cy="65" r="12" fill="url(#capG)"/><circle cx="234.5" cy="61" r="3.5" fill="#fff" opacity=".35"/></g>
-              </g>
-            </svg>
-          </div>
-        </div>
-        <canvas id="viz" width="600" height="112" aria-hidden="true"></canvas>
+        <canvas id="viz" width="600" height="200" aria-hidden="true"></canvas>
         <div class="meta">
-          <div class="t" id="curTitle">Nenhuma música</div>
           <div class="a" id="curArtist">Adiciona ficheiros na biblioteca</div>
         </div>
         <div class="seek">
@@ -355,6 +319,7 @@ body.playing .truck { animation-play-state: running; }
           <video id="hiluxVid" src="video/hilux.mp4" poster="video/hilux-poster.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Vídeo da Hilux no rodeio"></video>
           <div class="cap"><span id="bubbleTxt">Vem prá Hilux!</span></div>
         </div>
+        <div class="ticker" role="marquee" aria-live="off"><div class="tick-view"><div class="tick-track" id="tickTrack"></div></div></div>
       </div>
     </section>
 
@@ -599,9 +564,25 @@ function setPlaying(on) {
   if (on) startViz();
   syncVideo();
 }
+let tickText = 'Siruben Music';
+function setTicker(t) { tickText = t; renderTicker(); }
+function renderTicker() {
+  const tr = $('tickTrack'); if (!tr) return;
+  const vw = tr.parentElement.clientWidth;
+  const unit = '<span class="tu">' + esc(tickText) + '<b>◆</b></span>';
+  tr.innerHTML = unit;
+  const w = tr.firstElementChild.getBoundingClientRect().width;
+  if (!w || !vw) return;
+  const n = Math.max(1, Math.ceil(vw / w));
+  tr.innerHTML = unit.repeat(n * 2);
+  tr.style.setProperty('--dur', Math.max(6, (w * n) / 55).toFixed(1) + 's');
+}
+let tickRz;
+window.addEventListener('resize', () => { clearTimeout(tickRz); tickRz = setTimeout(() => { renderTicker(); sizeViz(); }, 150); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderTicker);
 function updateNow() {
   const t = byId(S.cur);
-  $('curTitle').textContent = t ? t.title : 'Nenhuma música';
+  setTicker(t ? t.title : 'Siruben Music');
   $('curArtist').textContent = t ? (t.artist || (S.set.skin === 'hilux' ? 'Célia e Rubinho' : 'Sem artista')) : 'Adiciona ficheiros na biblioteca';
   $('miniTitle').textContent = t ? t.title : '—';
   $('mini').classList.toggle('show', !!t && S.tab !== 'now');
@@ -644,8 +625,13 @@ volEl.addEventListener('change', saveSet);
 /* ---------- Visualizador ---------- */
 const cv = $('viz'), cx = cv.getContext('2d');
 const NB = 36, bars = new Float32Array(NB);
-let vizOn = false;
-function startViz() { if (!vizOn) { vizOn = true; requestAnimationFrame(drawViz); } }
+let vizOn = false, vizD = 1;
+function sizeViz() {
+  const r = cv.getBoundingClientRect(); if (!r.width || !r.height) return;
+  vizD = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(r.width * vizD); cv.height = Math.round(r.height * vizD);
+}
+function startViz() { if (!vizOn) { vizOn = true; sizeViz(); requestAnimationFrame(drawViz); } }
 function drawViz(ts) {
   const w = cv.width, h = cv.height, playing = !audio.paused;
   if (analyser && playing) analyser.getByteFrequencyData(freq);
@@ -668,15 +654,15 @@ function drawViz(ts) {
   rs.setProperty('--b1', wave(0)); rs.setProperty('--b2', wave(0.33)); rs.setProperty('--b3', wave(0.66));
   cx.clearRect(0, 0, w, h);
   const hil = S.set.skin === 'hilux';
-  cx.shadowBlur = 12;
-  const gap = 5, bw = (w - gap * (NB - 1)) / NB;
+  cx.shadowBlur = 12 * vizD;
+  const gap = 5 * vizD, bw = (w - gap * (NB - 1)) / NB;
   for (let i = 0; i < NB; i++) {
     const bh = Math.max(4, bars[i] * h * 0.96);
     const tt = (i / NB + ts / 7000) % 1;
     const hue = 185 + 130 * (1 - Math.abs(2 * tt - 1));
     const col = (hil && i % 6 === 3) ? '#ffb62e' : 'hsl(' + hue.toFixed(0) + ' 100% ' + (hil ? 66 : 62) + '%)';
     cx.fillStyle = col; cx.shadowColor = col;
-    const x = i * (bw + gap), y = h - bh, r = Math.min(bw / 2, 5);
+    const x = i * (bw + gap), y = h - bh, r = Math.min(bw / 2, 5 * vizD);
     cx.beginPath();
     cx.moveTo(x, h); cx.lineTo(x, y + r); cx.quadraticCurveTo(x, y, x + r, y);
     cx.lineTo(x + bw - r, y); cx.quadraticCurveTo(x + bw, y, x + bw, y + r); cx.lineTo(x + bw, h); cx.closePath();
@@ -885,6 +871,7 @@ function setTab(name) {
   ['now', 'lib', 'pl'].forEach(n => { $('v-' + n).hidden = n !== name; });
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   $('mini').classList.toggle('show', !!byId(S.cur) && name !== 'now');
+  if (name === 'now') { renderTicker(); sizeViz(); }
   if (name === 'lib') renderLib();
   if (name === 'pl') renderPl();
 }
@@ -910,7 +897,7 @@ function applySettings() {
 }
 $('skinBtn').addEventListener('click', () => {
   S.set.skin = S.set.skin === 'hilux' ? 'neon' : 'hilux';
-  saveSet(); applySettings(); updateNow(); startViz();
+  saveSet(); applySettings(); sizeViz(); updateNow(); startViz();
   toast(S.set.skin === 'hilux' ? 'Modo Hilux ligado' : 'Modo Néon ligado');
 });
 $('bPlay').addEventListener('click', toggle);
